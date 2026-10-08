@@ -98,6 +98,7 @@ const CURRENCIES = [
   { code: "GBP", name: "British Pound (£)" },
   { code: "USD", name: "US Dollar ($)" },
   { code: "EUR", name: "Euro (€)" },
+  { code: "INR", name: "Indian Rupee (₹)" },
   { code: "PKR", name: "Pakistani Rupee (Rs)" },
   { code: "SAR", name: "Saudi Riyal (SAR)" },
   { code: "AED", name: "UAE Dirham (AED)" },
