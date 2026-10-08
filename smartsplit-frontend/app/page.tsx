@@ -1228,11 +1228,23 @@ export default function Home() {
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="mb-5 flex items-center gap-3">
-                <div
-                  className={`${bungee.className} flex h-10 w-10 items-center justify-center rounded-lg bg-white text-black`}
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 64 64"
+                  role="img"
+                  aria-label="SmartSplit"
                 >
-                  S
-                </div>
+                  <rect width="64" height="64" rx="12" fill="#ffffff" />
+                  <path
+                    d="M15 8 H49 V57 L44.5 52 L40 57 L35.5 52 L31 57 L26.5 52 L22 57 L17.5 52 L15 57 Z"
+                    fill="#000000"
+                  />
+                  <rect x="21" y="15" width="22" height="4" fill="#ffffff" />
+                  <rect x="21" y="24" width="22" height="4" fill="#ffffff" />
+                  <rect x="21" y="33" width="14" height="4" fill="#ffffff" />
+                  <rect x="21" y="42" width="22" height="4" fill="#ffffff" />
+                </svg>
 
                 <span
                   className={`${bungee.className} text-sm tracking-wider text-white`}
