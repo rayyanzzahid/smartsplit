@@ -1531,7 +1531,7 @@ export default function Home() {
                     <h3
                       className={`${bungee.className} text-2xl`}
                     >
-                      WHO&apos;S PAYING?
+                      WHO&apos;S EATING?
                     </h3>
                   </div>
 
