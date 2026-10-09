@@ -4,6 +4,8 @@ SmartSplit is a full-stack bill-splitting app. A Spring Boot REST API handles th
 
 Create a bill, add people and items, split items between people, add tax and tip, record who paid, and get the minimum set of transactions needed to settle up.
 
+![SmartSplit start page](docs/start.png)
+
 ## Screenshots
 
 | Add people & items | Share items |
@@ -12,7 +14,7 @@ Create a bill, add people and items, split items between people, add tax and tip
 
 | Summary | Settlement |
 | --- | --- |
-| ![Summary](docs/summary.png) | ![Summary](docs/settlement.png) |
+| ![Summary](docs/summary.png) | ![Settlement](docs/settlement.png) |
 
 ## Features
 
