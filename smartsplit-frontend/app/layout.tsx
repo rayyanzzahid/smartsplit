@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SmartSplit",
   description: "Split the bill without the headache.",
+  verification: {
+    google: "VC9zkILUd_PtVtsH2Mrl8zJWzShvfMqQkDfnvvwwu5E",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
