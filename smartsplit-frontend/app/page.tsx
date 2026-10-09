@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Bungee, Space_Grotesk } from "next/font/google";
 
 const bungee = Bungee({
@@ -157,6 +157,18 @@ export default function Home() {
   const [error, setError] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [showSlowLoadingMessage, setShowSlowLoadingMessage] = useState(false);
+
+  useEffect(() => {
+    // A request on page load can wake the backend if it has been sleeping.
+    void fetch(API_URL, {
+      method: "GET",
+      mode: "no-cors",
+      cache: "no-store",
+    }).catch(() => {
+      // Ignore warm-up errors; the actual API request will show any real error.
+    });
+  }, []);
 
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -253,8 +265,16 @@ export default function Home() {
       return;
     }
 
+    let slowLoadingTimer: ReturnType<typeof setTimeout> | undefined;
+
     try {
       setLoading(true);
+      setShowSlowLoadingMessage(false);
+
+      // Render's free backend may need a little time to wake up.
+      slowLoadingTimer = setTimeout(() => {
+        setShowSlowLoadingMessage(true);
+      }, 2500);
 
       const data: BillResponse = await apiRequest("/bill", {
         method: "POST",
@@ -301,7 +321,11 @@ export default function Home() {
           : "Failed to create bill."
       );
     } finally {
+      if (slowLoadingTimer) {
+        clearTimeout(slowLoadingTimer);
+      }
       setLoading(false);
+      setShowSlowLoadingMessage(false);
     }
   }
 
@@ -1391,6 +1415,12 @@ export default function Home() {
               {loading ? "CREATING..." : "CREATE BILL"}
             </button>
           </div>
+
+          {loading && showSlowLoadingMessage && (
+            <p role="status" aria-live="polite" className="mt-3 text-sm text-[#aaa]">
+              Connecting to SmartSplit... The server may be waking up, so this first request can take a little longer. Please wait.
+            </p>
+          )}
 
           <div className="mt-6 border-t border-[#222] pt-6">
             <p className="mb-4 text-[9px] font-black tracking-[0.25em] text-[#555]">
