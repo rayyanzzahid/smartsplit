@@ -4,17 +4,28 @@ SmartSplit is a full-stack bill-splitting app. A Spring Boot REST API handles th
 
 Create a bill, add people and items, split items between people, add tax and tip, record who paid, and get the minimum set of transactions needed to settle up.
 
+## Screenshots
+
+| Add people & items | Share items |
+| --- | --- |
+| ![Add people and items](docs/items.png) | ![Share items](docs/sharing.png) |
+
+| Summary | Settlement |
+| --- | --- |
+| ![Summary](docs/summary.png) | ![Summary](docs/settlement.png) |
+
 ## Features
 
-- Create bills and add people
-- Add items and prices, and split each item between one or more people
+- Create bills and add, edit and delete people
+- Add, edit and delete items with prices and quantities, and split each item between one or more people
 - Distribute tax proportionally to each person's subtotal
 - Split tip equally
 - Record payments
 - Calculate each person's total, paid amount, and balance
 - Generate settlement transactions (who pays whom)
 - View a complete bill summary
-- Multi-currency display (including GBP and INR)
+- Reload a previous bill with its bill ID and access code
+- Multi-currency display (GBP, USD, EUR, INR, PKR, SAR, AED)
 - Persistent storage in PostgreSQL
 
 ## Tech Stack
@@ -23,7 +34,7 @@ Create a bill, add people and items, split items between people, add tax and tip
 | -------- | ------------------------------------------- |
 | Backend  | Java 21, Spring Boot, Spring Data JPA, Maven |
 | Database | PostgreSQL (Supabase or local)              |
-| Frontend | TypeScript, Next.js, React                  |
+| Frontend | TypeScript, Next.js, React, Tailwind CSS    |
 | Testing  | JUnit                                       |
 
 ## Project Structure
@@ -69,7 +80,11 @@ npm install
 npm run dev
 ```
 
-The app runs on `http://localhost:3000`. If the frontend needs the API URL configured, set it in `.env.local` (for example `NEXT_PUBLIC_API_URL=http://localhost:8080`).
+The app runs on `http://localhost:3000`. The frontend reads the API URL from `.env.local` and falls back to `http://localhost:8080`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
 
 ### Running tests
 
@@ -80,17 +95,25 @@ mvn test
 
 ## API Overview
 
-Endpoint paths below are indicative. Adjust them to match your controllers.
+Creating a bill returns a bill ID and an access code. Requests for that bill send the code in the `X-Bill-Access-Code` header.
 
-| Method | Endpoint                          | Description                        |
-| ------ | --------------------------------- | ---------------------------------- |
-| POST   | `/bills`                          | Create a bill                      |
-| GET    | `/bills/{id}`                     | Get a full bill summary            |
-| POST   | `/bills/{id}/people`              | Add a person                       |
-| POST   | `/bills/{id}/items`               | Add an item and who shares it      |
-| POST   | `/bills/{id}/payments`            | Record a payment                   |
-| GET    | `/bills/{id}/balances`            | Get each person's balance          |
-| GET    | `/bills/{id}/settlements`         | Get settlement transactions        |
+| Method | Endpoint                | Description                               |
+| ------ | ----------------------- | ----------------------------------------- |
+| POST   | `/bill`                 | Create a bill                             |
+| GET    | `/bill/load?billId=`    | Load a previous bill                      |
+| POST   | `/person`               | Add a person                              |
+| PUT    | `/person`               | Rename a person                           |
+| DELETE | `/person`               | Remove a person                           |
+| POST   | `/item`                 | Add an item                               |
+| PUT    | `/item`                 | Edit an item                              |
+| DELETE | `/item`                 | Remove an item                            |
+| POST   | `/shareItem`            | Share an item with a person               |
+| POST   | `/unshareItem`          | Remove a person from an item              |
+| POST   | `/tax`                  | Set tax                                   |
+| POST   | `/tip`                  | Set tip                                   |
+| POST   | `/paid`                 | Record a payment                          |
+| GET    | `/summary?billId=`      | Get each person's total, paid and balance |
+| POST   | `/settlement`           | Calculate settlement transactions         |
 
 ## Example
 
