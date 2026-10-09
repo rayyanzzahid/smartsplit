@@ -1,57 +1,127 @@
 # SmartSplit
 
-SmartSplit is a bill-splitting REST API built with Java and Spring Boot.
+SmartSplit is a full-stack bill-splitting app. A Spring Boot REST API handles the split logic and a TypeScript frontend gives you a UI on top of it.
 
-It allows users to create a bill, add people and items, split items between people, calculate tax and tip, record payments, calculate balances, and generate settlement transactions.
+Create a bill, add people and items, split items between people, add tax and tip, record who paid, and get the minimum set of transactions needed to settle up.
 
 ## Features
 
-- Create bills
-- Add people to a bill
-- Add items and prices
-- Split items between multiple people
-- Calculate each person's share
-- Distribute tax proportionally
+- Create bills and add people
+- Add items and prices, and split each item between one or more people
+- Distribute tax proportionally to each person's subtotal
 - Split tip equally
 - Record payments
-- Calculate final totals
-- Calculate balances
-- Generate settlement transactions
+- Calculate each person's total, paid amount, and balance
+- Generate settlement transactions (who pays whom)
 - View a complete bill summary
-- Store data using PostgreSQL
+- Multi-currency display (including GBP and INR)
+- Persistent storage in PostgreSQL
 
-## Technologies
+## Tech Stack
 
-- Java 21
-- Spring Boot
-- Spring Data JPA
-- PostgreSQL
-- Maven
-- JUnit
-- REST API
-- Git / GitHub
+| Layer    | Technology                                  |
+| -------- | ------------------------------------------- |
+| Backend  | Java 21, Spring Boot, Spring Data JPA, Maven |
+| Database | PostgreSQL (Supabase or local)              |
+| Frontend | TypeScript, Next.js, React                  |
+| Testing  | JUnit                                       |
 
 ## Project Structure
 
-The project follows an object-oriented design with separate classes for:
+```
+smartsplit/
+├── smartsplit/            # Spring Boot backend
+│   └── src/main/java/...  # Bill, Person, Item, SettlementTransaction, controllers
+└── smartsplit-frontend/   # TypeScript frontend
+```
 
-- `Bill`
-- `Person`
-- `Item`
-- `SettlementTransaction`
+The domain classes (`Bill`, `Person`, `Item`, `SettlementTransaction`) contain the splitting logic. Controllers only handle HTTP.
 
-Spring Boot controllers handle HTTP requests, while the domain classes contain the bill-splitting logic.
+## Getting Started
+
+### Prerequisites
+
+- Java 21
+- Maven
+- Node.js 18+ and npm
+- A PostgreSQL database (local, or a Supabase project)
+
+### 1. Backend
+
+Database credentials are read from environment variables, so nothing sensitive is committed.
+
+```bash
+export DB_URL="jdbc:postgresql://<host>:<port>/<database>"
+export DB_USERNAME="<username>"
+export DB_PASSWORD="<password>"
+
+cd smartsplit
+mvn spring-boot:run
+```
+
+The API starts on `http://localhost:8080` by default.
+
+### 2. Frontend
+
+```bash
+cd smartsplit-frontend
+npm install
+npm run dev
+```
+
+The app runs on `http://localhost:3000`. If the frontend needs the API URL configured, set it in `.env.local` (for example `NEXT_PUBLIC_API_URL=http://localhost:8080`).
+
+### Running tests
+
+```bash
+cd smartsplit
+mvn test
+```
+
+## API Overview
+
+Endpoint paths below are indicative. Adjust them to match your controllers.
+
+| Method | Endpoint                          | Description                        |
+| ------ | --------------------------------- | ---------------------------------- |
+| POST   | `/bills`                          | Create a bill                      |
+| GET    | `/bills/{id}`                     | Get a full bill summary            |
+| POST   | `/bills/{id}/people`              | Add a person                       |
+| POST   | `/bills/{id}/items`               | Add an item and who shares it      |
+| POST   | `/bills/{id}/payments`            | Record a payment                   |
+| GET    | `/bills/{id}/balances`            | Get each person's balance          |
+| GET    | `/bills/{id}/settlements`         | Get settlement transactions        |
 
 ## Example
 
-For example, if:
+Three people split a meal:
 
-- Rayyan pays £30 and owes £24.75
-- Ahmed pays £20 and owes £24.75
-- Ali pays £8 and owes £8.50
+| Person | Paid | Owes   | Balance |
+| ------ | ---- | ------ | ------- |
+| Rayyan | £30  | £24.75 | +£5.25  |
+| Ahmed  | £20  | £24.75 | −£4.75  |
+| Ali    | £8   | £8.50  | −£0.50  |
 
-The settlement can calculate:
+Settlement:
 
-```text
-Ahmed → Rayyan: £4.75
-Ali → Rayyan: £0.50
+- Ahmed → Rayyan: £4.75
+- Ali → Rayyan: £0.50
+
+## How the Maths Works
+
+- **Item split:** each item's price is divided between the people sharing it.
+- **Tax:** distributed in proportion to each person's item subtotal.
+- **Tip:** split equally across everyone on the bill.
+- **Balance:** amount paid minus amount owed. Positive means they are owed money, negative means they owe.
+- **Settlement:** people who owe are matched against people who are owed until all balances reach zero.
+
+## Roadmap
+
+- Authentication and saved bill history
+- Share a bill via link
+- Receipt scanning
+- CI with GitHub Actions (Maven build and tests)
+
+## Author
+
+Built by [Rayyan](https://github.com/rayyanzzahid).
